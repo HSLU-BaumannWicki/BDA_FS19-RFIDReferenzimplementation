@@ -1,13 +1,11 @@
 sudo: false
-
 language: java
-
 jdk: openjdk12
 
 before_deploy:
-  - ./gradlew clean
-  - ./gradlew jar
-  - [ -f .version ] && source .version || VERSION=x.x
+  - "./gradlew clean"
+  - "./gradlew jar"
+  - "[ -f .version ] && source .version || VERSION=x.x"
 
 deploy:
   - provider: releases
