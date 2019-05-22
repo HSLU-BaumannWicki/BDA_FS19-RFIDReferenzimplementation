@@ -3,9 +3,9 @@ language: java
 jdk: openjdk12
 
 before_deploy:
-  - "./gradlew clean"
-  - "./gradlew jar"
   - "[ -f .version ] && source .version || VERSION=x.x"
+  - "./gradlew clean"
+  - "./gradlew -PVERSION=${VERSION} -PTRAVIS_BUILD_NUMBER=${TRAVIS_BUILD_NUMBER} jar"
 
 deploy:
   - provider: releases

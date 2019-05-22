@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'HSLU-BaumannWicki'
-version '1.0-SNAPSHOT'
+version project.properties.containsKey("VERSION") && project.properties.containsKey("TRAVIS_BUILD_NUMBER") ? "${VERSION}.${TRAVIS_BUILD_NUMBER}-SNAPSHOT" : "0.0.1-LocalBuild"
 
 repositories {
     mavenCentral()
