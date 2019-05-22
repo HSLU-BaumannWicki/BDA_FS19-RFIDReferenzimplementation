@@ -1,0 +1,30 @@
+sudo: false
+
+language: java
+
+jdk: openjdk12
+
+before_deploy:
+  - ./gradlew clean
+  - ./gradlew jar
+  - [ -f .version ] && source .version || VERSION=x.x
+
+deploy:
+  - provider: releases
+    api_key: $GIT_AUTH
+    file_glob: true
+    file: "build/libs/*"
+    skip_cleanup: true
+    prerelease: true
+    name: "v${VERSION}.${TRAVIS_BUILD_NUMBER}"
+    tag_name: "v${VERSION}.${TRAVIS_BUILD_NUMBER}"
+    on:
+      tags: false
+      branch: master
+  - provider: releases
+    api_key: $GIT_AUTH
+    file_glob: true
+    file: "build/libs/*"
+    skip_cleanup: true
+    on:
+      tags: true
