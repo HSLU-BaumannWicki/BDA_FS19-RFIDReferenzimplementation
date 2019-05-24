@@ -8,12 +8,11 @@ import rfid.communicationid.TagInformation
 
 class HyientechDeviceCommunicationDriver(dllFile: String) : CommunicationDriver {
     private val hyientechDriver: HyientechDriver
+
     private val baudRatePointer = 0.toByte()
     private val frmHandlePointer = IntByReference(0)
     private val deviceAddressPointer = ByteByReference(Byte.MIN_VALUE)
     private val devicePortPointer = IntByReference()
-
-
     init {
         if (Platform.isWindows() && !Platform.is64Bit()) {
             hyientechDriver = Native.load(dllFile, HyientechDriver::class.java)
@@ -21,6 +20,7 @@ class HyientechDeviceCommunicationDriver(dllFile: String) : CommunicationDriver 
             throw UnsupportedPlattformException("Hyientech Driver only supports a Windows 32Bit platform")
         }
     }
+
 
     fun initialize() {
         if (isError(
@@ -39,19 +39,39 @@ class HyientechDeviceCommunicationDriver(dllFile: String) : CommunicationDriver 
         }
     }
 
+    override fun readBlocks(from: Byte, numberOfBlocksToRead: Byte, tagInformation: TagInformation): List<Byte> {
+        val uid = ByteByReference()
+        val data = ByteByReference()
+        val errorCode = ByteByReference()
+        uid.pointer.write(0, tagInformation.uid.toByteArray(), 0, tagInformation.uid.size)
+        val error = hyientechDriver.ReadMultipleBlock(
+            deviceAddressPointer,
+            AddressingIndicator.SELECTED_8BYTES_PER_BLOCK.byteByReference,
+            uid,
+            from,
+            numberOfBlocksToRead,
+            ByteByReference(),
+            data,
+            errorCode,
+            frmHandlePointer.value
+        )
+        if (error != 0) throw DeviceCommunicationException("Error occurred on reading Device. Error code provided by Hyientech was: $errorCode")
+        return data.pointer.getByteArray(0, numberOfBlocksToRead * 8).toList()
+    }
+
     private fun isError(errorCode: Int): Boolean {
         return errorCode < 0
     }
 
-    override fun getAllRfids(): List<TagInformation> {
+    override fun findAllRfids(): List<TagInformation> {
         var tags = ByteByReference()
         return createInventory(tags)
     }
 
-    override fun getAllRfids(timeout: Int): List<TagInformation> {
+    override fun findAllRfids(timeout: Int): List<TagInformation> {
         var inventoryScanTime = ByteByReference(timeout.toByte())
         hyientechDriver.WriteInventoryScanTime(this.deviceAddressPointer, inventoryScanTime, frmHandlePointer.value)
-        return getAllRfids()
+        return findAllRfids()
     }
 
     override fun isSingleTagReachable(tagInformation: TagInformation): Boolean {
@@ -223,6 +243,11 @@ class HyientechDeviceCommunicationDriver(dllFile: String) : CommunicationDriver 
     class DeviceCommunicationException(message: String) :
         Throwable("Error during the Communication with the Hyientech device: %s".format(message)) {
         constructor() : this("")
+    }
+
+    enum class AddressingIndicator(val byteByReference: ByteByReference) {
+        ADDRESSED_4BYTES_PER_BLOCK(ByteByReference(0)), SELECTED_4BYTES_PER_BLOCK(ByteByReference(1)),
+        ADDRESSED_8BYTES_PER_BLOCK(ByteByReference(4)), SELECTED_8BYTES_PER_BLOCK(ByteByReference(5))
     }
 
     companion object {
