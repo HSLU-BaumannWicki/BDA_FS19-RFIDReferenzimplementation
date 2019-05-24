@@ -1,11 +1,13 @@
 package ch.bda.baumannwicki.rfidcommunication
 
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import rfid.communication.HyientechDeviceCommunicationDriver
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal class IntContinuousReaderTest {
+    @Disabled
     @Test
     fun readContinuouslyForNewRFIDTags() {
         val communicationDriver = HyientechDeviceCommunicationDriver("Basic")
