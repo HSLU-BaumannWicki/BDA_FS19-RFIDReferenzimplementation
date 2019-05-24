@@ -1,5 +1,6 @@
 package rfid.communication
 
+import ch.bda.baumannwicki.rfidcommunication.DeviceCommunicationException
 import ch.bda.baumannwicki.rfidcommunication.UnsupportedPlattformException
 import com.sun.jna.*
 import com.sun.jna.ptr.ByteByReference
@@ -13,8 +14,9 @@ class HyientechDeviceCommunicationDriver(dllFile: String) : CommunicationDriver 
     private val frmHandlePointer = IntByReference(0)
     private val deviceAddressPointer = ByteByReference(Byte.MIN_VALUE)
     private val devicePortPointer = IntByReference()
+
     init {
-        if (Platform.isWindows() && !Platform.is64Bit()) {
+        if (Platform.isWindows()) {
             hyientechDriver = Native.load(dllFile, HyientechDriver::class.java)
         } else {
             throw UnsupportedPlattformException("Hyientech Driver only supports a Windows 32Bit platform")
@@ -41,12 +43,14 @@ class HyientechDeviceCommunicationDriver(dllFile: String) : CommunicationDriver 
 
     override fun readBlocks(from: Byte, numberOfBlocksToRead: Byte, tagInformation: TagInformation): List<Byte> {
         val uid = ByteByReference()
+        uid.pointer = Memory(tagInformation.uid.size.toLong())
         val data = ByteByReference()
+        data.pointer = Memory(50)
         val errorCode = ByteByReference()
         uid.pointer.write(0, tagInformation.uid.toByteArray(), 0, tagInformation.uid.size)
         val error = hyientechDriver.ReadMultipleBlock(
             deviceAddressPointer,
-            AddressingIndicator.SELECTED_8BYTES_PER_BLOCK.byteByReference,
+            AddressingIndicator.ADDRESSED_4BYTES_PER_BLOCK.byteByReference,
             uid,
             from,
             numberOfBlocksToRead,
@@ -55,8 +59,8 @@ class HyientechDeviceCommunicationDriver(dllFile: String) : CommunicationDriver 
             errorCode,
             frmHandlePointer.value
         )
-        if (error != 0) throw DeviceCommunicationException("Error occurred on reading Device. Error code provided by Hyientech was: $errorCode")
-        return data.pointer.getByteArray(0, numberOfBlocksToRead * 8).toList()
+        if (error != 0) throw DeviceCommunicationException("Error occurred on reading Device. Error code provided by Hyientech was: $error ${errorCode.value}")
+        return data.pointer.getByteArray(0, numberOfBlocksToRead * 4).toList()
     }
 
     private fun isError(errorCode: Int): Boolean {
@@ -95,7 +99,7 @@ class HyientechDeviceCommunicationDriver(dllFile: String) : CommunicationDriver 
         hyientechDriver.SetActiveANT(deviceAddressPointer, antennaStatus, frmHandlePointer.value)
     }
 
-    private fun createInventory(tags: ByteByReference): ArrayList<TagInformation> {
+    private fun createInventory(tags: ByteByReference): List<TagInformation> {
         var tagsInformation = ArrayList<TagInformation>()
         var nmrTags = ByteByReference()
         var tagsPointer: Pointer = Memory(255 * 9)
@@ -109,12 +113,8 @@ class HyientechDeviceCommunicationDriver(dllFile: String) : CommunicationDriver 
             frmHandlePointer.value
         )
         if (value == 0 || value == 14 || value == 11) {
-            for (i: Int in 1..nmrTags.value) {
-                var tagUid = ArrayList<Byte>()
-                for (j: Int in 0..7) {
-                    tagUid.add(tagsPointer.getByte((((i - 1) * 9 + 8 - j).toLong())))
-                }
-                tagsInformation.add(TagInformation(tagUid))
+            for (i in 1..nmrTags.value) {
+                tagsInformation.add(TagInformation(tagsPointer.getByteArray(((i - 1) * 9 + 1).toLong(), 8).toList()))
             }
         }
         return tagsInformation
@@ -238,11 +238,6 @@ class HyientechDeviceCommunicationDriver(dllFile: String) : CommunicationDriver 
             intFrmHandle: Int
         ): Int
 
-    }
-
-    class DeviceCommunicationException(message: String) :
-        Throwable("Error during the Communication with the Hyientech device: %s".format(message)) {
-        constructor() : this("")
     }
 
     enum class AddressingIndicator(val byteByReference: ByteByReference) {

@@ -13,12 +13,24 @@ class ContinuousReader(
 ) {
     fun readContinuouslyForNewRFIDTags() {
         while (continueRunning.get()) {
-            var tagInformations: List<TagInformation> = communicationDriver.findAllRfids(readingTimeForInventory)
-            for (tag in tagInformations) {
-                val byteList = communicationDriver.readBlocks(0, 2, tag)
+            var tagInformations: List<TagInformation> = findAllRFIDs()
+            sendBlocksFromTagsToQueue(tagInformations)
+        }
+    }
+
+    private fun sendBlocksFromTagsToQueue(tagInformations: List<TagInformation>) {
+        for (tag in tagInformations) {
+            try {
+                val byteList:List<Byte> = readBlockFromTags(tag)
                 communicationQueue.offer(byteList)
+            } catch (exception: DeviceCommunicationException) {
+                // swallow Exception cause the tag may got unreachable
             }
         }
     }
+
+    private fun readBlockFromTags(tag: TagInformation) = communicationDriver.readBlocks(0, 4, tag)
+
+    private fun findAllRFIDs() = communicationDriver.findAllRfids(readingTimeForInventory)
 
 }
