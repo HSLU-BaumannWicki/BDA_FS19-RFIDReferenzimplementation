@@ -21,6 +21,8 @@ class CsvLibraryCopyParser : CsvParser<LibraryCopy> {
                 val type: String = libraryPlainEntries[2]
                 val layout: String = libraryPlainEntries[3]
                 libraryCopys.add(LibraryCopy(article, box, type, layout, subBox))
+            } else {
+                throw NotCompliantStringToParseCSVException()
             }
         }
         return libraryCopys
