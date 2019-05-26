@@ -7,7 +7,7 @@ class CsvLibraryCopyParser : CsvParser<LibraryCopy> {
         if (dataString.contains("\n")) {
             throw IllegalArgumentException("dataString contains illegal \\n character -> dataString: $dataString")
         }
-        return parseStringToDatas(dataString).get(0)
+        return parseStringToDatas(dataString)[0]
     }
 
     override fun parseStringToDatas(dataString: String): List<LibraryCopy> {
