@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class ContinuousReader(
     val continueRunning: AtomicBoolean,
-    val communicationQueue: ConcurrentLinkedQueue<List<Byte>>,
+    val communicationQueue: ConcurrentLinkedQueue<List<TagInformation>>,
     val readingTimeForInventory: Int,
     val communicationDriver: CommunicationDriver
 ) {
@@ -19,14 +19,16 @@ class ContinuousReader(
     }
 
     private fun sendBlocksFromTagsToQueue(tagInformations: List<TagInformation>) {
+        val list: MutableList<TagInformation> = ArrayList()
         for (tag in tagInformations) {
             try {
-                val byteList:List<Byte> = readBlockFromTags(tag)
-                communicationQueue.offer(byteList)
+                val tagInformation: TagInformation = TagInformation(readBlockFromTags(tag))
+                list.add(tagInformation)
             } catch (exception: DeviceCommunicationException) {
                 // swallow Exception cause the tag may got unreachable
             }
         }
+        communicationQueue.offer(list)
     }
 
     private fun readBlockFromTags(tag: TagInformation) = communicationDriver.readBlocks(0, 4, tag)

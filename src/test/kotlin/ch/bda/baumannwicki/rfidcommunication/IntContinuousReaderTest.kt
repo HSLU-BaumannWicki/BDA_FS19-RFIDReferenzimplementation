@@ -3,6 +3,7 @@ package ch.bda.baumannwicki.rfidcommunication
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import rfid.communication.HyientechDeviceCommunicationDriver
+import rfid.communicationid.TagInformation
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -12,7 +13,7 @@ internal class IntContinuousReaderTest {
     fun readContinuouslyForNewRFIDTags() {
         val communicationDriver = HyientechDeviceCommunicationDriver("Basic")
         communicationDriver.initialize()
-        val communicationQueue = ConcurrentLinkedQueue<List<Byte>>()
+        val communicationQueue = ConcurrentLinkedQueue<List<TagInformation>>()
         val keepRunning = AtomicBoolean(true)
         val reader =
             ContinuousReader(keepRunning, communicationQueue, 100, communicationDriver)
@@ -22,13 +23,11 @@ internal class IntContinuousReaderTest {
         Thread.sleep(10000)
         keepRunning.set(false)
         Thread.sleep(100)
-        for (entries in communicationQueue) {
-            var text = ""
-            for (entrie in entries) {
-                if (entrie in 48..122)
-                    text += entrie.toChar()
+        for (tags in communicationQueue) {
+            for (tag in tags) {
+                var text = tag.toASCIIString()
+                if (text != "") println(text)
             }
-            if(text != "") System.out.println(text)
         }
     }
 }
