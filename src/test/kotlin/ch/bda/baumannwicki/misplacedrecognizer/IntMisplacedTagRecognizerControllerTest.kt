@@ -21,7 +21,10 @@ class IntMisplacedTagRecognizerControllerTest() {
         val tagInformationIncommintQueue = ConcurrentLinkedQueue<List<TagInformation>>()
         val misplacedRecognizer: MisplacedRecognizer = MisplacedRecognizerImpl()
         val libraryCopySupplier: LibraryCopySupplier =
-            LibraryCopyCSVSupplier(ReadableFileStub(""), CsvLibraryCopyParser())
+            LibraryCopyCSVSupplier(
+                ReadableFileStub("IDANEPASE1337,123,f,2,\nIDANEPASE1338,123,f,2,\nIDANEPASE1339,124,f,2,"),
+                CsvLibraryCopyParser()
+            )
         val logPersistor = LogPersistorStub()
 
         val communicationDriver = HyientechDeviceCommunicationDriver("Basic")
@@ -36,6 +39,7 @@ class IntMisplacedTagRecognizerControllerTest() {
             libraryCopySupplier,
             logPersistor
         )
+
         val thread = Thread { testee.runMisplacedTagRecognizerControllerTest() }
         val thread2 = Thread { reader.readContinuouslyForNewRFIDTags() }
         thread2.start()
@@ -44,6 +48,6 @@ class IntMisplacedTagRecognizerControllerTest() {
         run.set(false)
         thread.join(10000)
         thread2.join(10000)
-        println("${logPersistor.listAllTags} ..... ${logPersistor.listMisplaced}")
+        println("${logPersistor.listAllTags}\n${logPersistor.listMisplaced}")
     }
 }
