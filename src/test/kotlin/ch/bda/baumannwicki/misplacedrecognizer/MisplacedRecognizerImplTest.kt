@@ -67,27 +67,37 @@ class MisplacedRecognizerImplTest {
         }
     }
 
+    @Test
+    fun givenTagListwithOneTag_whenCalledgetBackRelationBoxId_thenBoxIdFromTagListEntrieShouldReturn() {
+        val testee = MisplacedRecognizerImpl()
+        val result = testee.getBackRelationBoxId(listOf(LibraryCopy("F", "1", "1", "2")))
+        assertEquals("1", result)
+    }
 
-    class TagBuilder() {
-        fun buildTag(box: String): LibraryCopy {
-            return LibraryCopy("F", box, "1", "2")
-        }
+    @Test
+    fun givenTagListwithTwoTagSameBox_whenCalledgetBackRelationBoxId_thenReturnBoxIdFromBothTag() {
+        val testee = MisplacedRecognizerImpl()
+        val result = testee.getBackRelationBoxId(
+            listOf(
+                LibraryCopy("F", "2", "1", "2"),
+                LibraryCopy("F", "2", "1", "2")
+            )
+        )
+        assertEquals("2", result)
+    }
 
-        fun buildListTags(box: String, number: Int): List<LibraryCopy> {
-            val list = ArrayList<LibraryCopy>()
-            for (i in 0..number) list.add(buildTag(box))
-            return list
-        }
-
-        fun buildListWithDifferentBoxes(
-            box1: String,
-            numberOfBoxOne: Int,
-            box2: String,
-            numberOfBoxTwo: Int
-        ): List<LibraryCopy> {
-            val list = buildListTags(box1, numberOfBoxOne).toMutableList()
-            list.addAll(buildListTags(box2, numberOfBoxTwo))
-            return list
-        }
+    @Test
+    fun givenTagListwithManyTags_whenCalledgetBackRelationBoxId_thenReturnBoxIdFromMostAppearingID() {
+        val testee = MisplacedRecognizerImpl()
+        val result = testee.getBackRelationBoxId(
+            listOf(
+                LibraryCopy("F", "2", "1", "2"),
+                LibraryCopy("F", "2", "1", "2"),
+                LibraryCopy("F", "5", "1", "2"),
+                LibraryCopy("F", "2", "1", "2"),
+                LibraryCopy("F", "6", "1", "2")
+            )
+        )
+        assertEquals("2", result)
     }
 }
