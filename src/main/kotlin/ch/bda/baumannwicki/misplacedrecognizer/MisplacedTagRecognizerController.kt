@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class MisplacedTagRecognizerController(
     val run: AtomicBoolean,
-    val incommingTagInformationQueue: Queue<List<TagInformation>>,
+    val incomingTagInformationQueue: Queue<List<TagInformation>>,
     val misplacedRecognizer: MisplacedRecognizer,
     val libraryCopySupplier: LibraryCopySupplier,
     val logPersistor: LogPersistor
@@ -17,9 +17,9 @@ class MisplacedTagRecognizerController(
 
     fun runMisplacedTagRecognizerControllerTest() {
         while (run.get()) {
-            if (!incommingTagInformationQueue.isEmpty()) {
+            if (!incomingTagInformationQueue.isEmpty()) {
                 val libraryCopyList: MutableList<LibraryCopy> = ArrayList()
-                val tagList: List<TagInformation> = incommingTagInformationQueue.poll()
+                val tagList: List<TagInformation> = incomingTagInformationQueue.poll()
                 for (tag: TagInformation in tagList) {
                     libraryCopyList.add(libraryCopySupplier.getLibraryCopyByID(tag.toASCIIString()))
                 }
