@@ -2,6 +2,7 @@ package ch.bda.baumannwicki.misplacedrecognizer
 
 import ch.bda.baumannwicki.data.LibraryCopy
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 
 class MisplacedRecognizerImplTest {
@@ -51,6 +52,19 @@ class MisplacedRecognizerImplTest {
             )
         )
         assertEquals(listOf(LibraryCopy("F", "5", "1", "2"), LibraryCopy("F", "6", "1", "2")), result)
+    }
+
+    @Test
+    fun givenTagListContaintingTwoTagsWithDifferentBoxes_whenCalledGetMisplacedTags_thenExceptionIsThrown() {
+        val testee = MisplacedRecognizerImpl()
+        assertThrows<BoxIdentificationNotPossibleException> {
+            testee.getMisplacedTags(
+                listOf(
+                    LibraryCopy("F", "2", "1", "2"),
+                    LibraryCopy("F", "1", "1", "2")
+                )
+            )
+        }
     }
 
 
