@@ -7,7 +7,7 @@ class TagInformation(val uid: List<Byte>) {
 
     fun toASCIIString(): String {
         var text = ""
-        for (entrie in uid.reversed()) {
+        for (entrie in uid) {
             if (entrie in 48..122)
                 text += entrie.toChar()
         }
