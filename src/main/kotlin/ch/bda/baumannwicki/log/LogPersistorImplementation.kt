@@ -13,8 +13,7 @@ class LogPersistorImplementation(fileHandler: FileHandler, val logger: Logger) :
     }
 
     override fun noMisplacedTagFound(correctPlacedTags: List<LibraryCopy>) {
-        logger.info("No Misplaced Tag Found")
-        logger.info("MisplacedTag found: " + correctPlacedTags.map(this::mapLibraryCopyToString))
+        logger.info("LibraryCopies found: " + correctPlacedTags.map(this::mapLibraryCopyToString))
     }
 
     override fun misplacedTagFound(misplacedTag: List<LibraryCopy>, correctPlacedTags: List<LibraryCopy>) {
