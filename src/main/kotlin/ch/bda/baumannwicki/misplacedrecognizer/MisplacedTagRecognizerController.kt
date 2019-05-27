@@ -12,7 +12,8 @@ class MisplacedTagRecognizerController(
     val incomingTagInformationQueue: Queue<List<TagInformation>>,
     val misplacedRecognizer: MisplacedRecognizer,
     val libraryCopySupplier: LibraryCopySupplier,
-    val logPersistor: LogPersistor
+    val logPersistor: LogPersistor,
+    val messegesToViewQueue: Queue<String>
 ) {
 
     fun runMisplacedTagRecognizerControllerTest() {
@@ -26,6 +27,7 @@ class MisplacedTagRecognizerController(
                 val misplacedTags: List<LibraryCopy> = misplacedRecognizer.getMisplacedTags(libraryCopyList)
                 if (!misplacedTags.isEmpty()) {
                     logPersistor.misplacedTagFound(misplacedTags, libraryCopyList)
+                    messegesToViewQueue.offer("MisplacedTag Found: $misplacedTags")
                 } else {
                     logPersistor.noMisplacedTagFound(libraryCopyList)
                 }

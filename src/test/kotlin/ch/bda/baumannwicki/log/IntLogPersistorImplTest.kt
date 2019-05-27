@@ -3,13 +3,21 @@ package ch.bda.baumannwicki.log
 import ch.bda.baumannwicki.data.LibraryCopy
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.logging.FileHandler
 import java.util.logging.Logger
 
 
-internal class IntLogPersistorImplementationTest {
-    val dateTime = LocalDateTime.now()
-    private var logPersistor : LogPersistorImplementation = LogPersistorImplementation(FileHandler("./RFIDRefImplIntegrationTestLog-${dateTime.year}.${dateTime.monthValue}.${dateTime.dayOfMonth}-${dateTime.hour}.${dateTime.minute}.${dateTime.second}.log"), Logger.getLogger("IntegrationTest"))
+internal class IntLogPersistorImplTest {
+    private val logPersistor: LogPersistor
+
+    init {
+        val dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH.mm.ss")) ?: "UnknownTime"
+        val fileHandler = FileHandler("./RFIDRefImplIntegrationTestLog-$dateTime.log")
+        val logger = Logger.getLogger("IntegrationTest")
+        logger.addHandler(fileHandler)
+        logPersistor = LogPersistorImpl(logger)
+    }
 
     @Test
     fun noMisplacedTagFound() {

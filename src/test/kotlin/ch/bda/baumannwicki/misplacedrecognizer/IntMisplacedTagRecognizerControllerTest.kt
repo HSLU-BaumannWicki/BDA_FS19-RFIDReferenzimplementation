@@ -37,7 +37,8 @@ class IntMisplacedTagRecognizerControllerTest() {
             tagInformationIncommintQueue,
             misplacedRecognizer,
             libraryCopySupplier,
-            logPersistor
+            logPersistor,
+            ConcurrentLinkedQueue<String>()
         )
 
         val thread = Thread { testee.runMisplacedTagRecognizerControllerTest() }

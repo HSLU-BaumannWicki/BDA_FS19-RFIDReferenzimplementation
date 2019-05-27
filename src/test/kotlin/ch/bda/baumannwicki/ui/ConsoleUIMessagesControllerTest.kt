@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.io.ByteArrayInputStream
 import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.test.assertEquals
 
 internal class ConsoleUIMessagesControllerTest {
@@ -14,12 +15,12 @@ internal class ConsoleUIMessagesControllerTest {
     fun givenReaderContainingQ_whenCallingRunView_thenQueueShouldContainStopApplication() {
         // arrange
         val consoleInteraction = ConsoleInteraction(ByteArrayInputStream("q\n".toByteArray()))
-        val queue = ConcurrentLinkedQueue<QueueMessages>()
+        val queue = AtomicBoolean(true)
         val testee = ConsoleUIMessagesController(ConcurrentLinkedQueue(), queue, MessageViewImpl(), consoleInteraction)
         // act
         testee.runView()
         // assert
-        assertEquals(QueueMessages.STOP_APPLICATION, queue.poll())
+        assertEquals(false, queue.get())
     }
 
     @Test
@@ -28,7 +29,7 @@ internal class ConsoleUIMessagesControllerTest {
         val consoleInteraction = ConsoleInteraction(ByteArrayInputStream("q\n".toByteArray()))
         val queue = ConcurrentLinkedQueue<String>(listOf("Test"))
         val messageVieStub = MessageViewStub()
-        val testee = ConsoleUIMessagesController(queue, ConcurrentLinkedQueue(), messageVieStub, consoleInteraction)
+        val testee = ConsoleUIMessagesController(queue, AtomicBoolean(true), messageVieStub, consoleInteraction)
         // act
         testee.runView()
         // assert
@@ -46,7 +47,7 @@ internal class ConsoleUIMessagesControllerTest {
         }
         val queue = ConcurrentLinkedQueue<String>(listOf("Test", "test"))
         val messageVieStub = MessageViewStub()
-        val testee = ConsoleUIMessagesController(queue, ConcurrentLinkedQueue(), messageVieStub, consoleInteraction)
+        val testee = ConsoleUIMessagesController(queue, AtomicBoolean(true), messageVieStub, consoleInteraction)
         // act
         testee.runView()
         // assert
@@ -61,7 +62,7 @@ internal class ConsoleUIMessagesControllerTest {
         val testee =
             ConsoleUIMessagesController(
                 queue,
-                ConcurrentLinkedQueue(),
+                AtomicBoolean(true),
                 MessageViewImpl(),
                 ConsoleInteraction(System.`in`)
             )
