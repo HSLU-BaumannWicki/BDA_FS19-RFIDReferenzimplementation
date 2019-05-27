@@ -7,7 +7,8 @@ class CsvLibraryCopyParser : CsvParser<LibraryCopy> {
         if (dataString.contains("\n")) {
             throw IllegalArgumentException("dataString contains illegal \\n character -> dataString: $dataString")
         }
-        return parseStringToDatas(dataString)[0]
+        val parsed = parseStringToDatas(dataString)
+        return if(parsed.isNotEmpty()) parsed[0] else LibraryCopy("","","","")
     }
 
     override fun parseStringToDatas(dataString: String): List<LibraryCopy> {
@@ -21,8 +22,6 @@ class CsvLibraryCopyParser : CsvParser<LibraryCopy> {
                 val layout: String = libraryPlainEntries[3]
                 val subBox: String = libraryPlainEntries[4]
                 libraryCopys.add(LibraryCopy(article, box, type, layout, subBox))
-            } else {
-                throw NotCompliantStringToParseCSVException()
             }
         }
         return libraryCopys
