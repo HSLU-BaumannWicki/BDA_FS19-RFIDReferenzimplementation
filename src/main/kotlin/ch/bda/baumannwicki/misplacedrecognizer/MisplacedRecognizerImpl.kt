@@ -14,6 +14,9 @@ class MisplacedRecognizerImpl : MisplacedRecognizer {
         var map: MutableMap<String, Int> = getMapWithBoxAsKeyAndNumberOfCallsAsValue(allTags)
         val resultList: MutableList<Pair<String, Int>> = getListSortedByValueFromMap(map)
         throwErrorIfClearIdentificationNotPossible(resultList)
+        if (resultList.size <= 1){
+            return emptyList()
+        }
         resultList.removeAt(0)
         val resultMap: Map<String, Int> = resultList.toMap()
         return allTags.filter { resultMap.containsKey(it.box) }.toList()
