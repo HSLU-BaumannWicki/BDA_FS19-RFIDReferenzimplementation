@@ -59,12 +59,12 @@ class HyientechDeviceCommunicationDriver(dllFile: String) : CommunicationDriver 
             errorCode,
             frmHandlePointer.value
         )
-        if (error != 0) throw DeviceCommunicationException("Error occurred on reading Device. Error code provided by Hyientech was: $error ${errorCode.value}")
+        if (isError(error)) throw DeviceCommunicationException("Error occurred on reading Device. Error code provided by Hyientech was: $error ${errorCode.value}")
         return data.pointer.getByteArray(0, numberOfBlocksToRead * 4).toList()
     }
 
     private fun isError(errorCode: Int): Boolean {
-        return errorCode < 0
+        return errorCode > 0
     }
 
     override fun findAllRfids(): List<TagInformation> {
