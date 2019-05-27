@@ -53,13 +53,6 @@ internal class CsvLibraryCopyParserTest {
     }
 
     @Test
-    fun givenNotACompliantCSVString_whenCallingParseStringToDatas_thenExpectAnExeption() {
-        val testString = "1,2,3\n5,9\n3,5,7,6,2"
-        val testee = CsvLibraryCopyParser()
-        assertThrows<NotCompliantStringToParseCSVException> { testee.parseStringToDatas(testString) }
-    }
-
-    @Test
     fun givenListOfTwoLibraryCopies_whenCallingParseDatasToString_thenStringContainingCorrectValuesShouldGetReturned() {
         val testList: List<LibraryCopy> = listOf(LibraryCopy("a", "b", "c", "d"), LibraryCopy("a", "b", "c", "d"))
         val testee = CsvLibraryCopyParser()
