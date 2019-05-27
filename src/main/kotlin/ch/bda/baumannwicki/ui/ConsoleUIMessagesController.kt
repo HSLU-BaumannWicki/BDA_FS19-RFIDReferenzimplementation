@@ -1,7 +1,7 @@
 package ch.bda.baumannwicki.ui
 
+import ch.bda.baumannwicki.ui.interaction.ConsoleInteraction
 import ch.bda.baumannwicki.ui.view.MessagesView
-import ch.bda.baumannwicki.util.ConsoleInteraction
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicBoolean
 

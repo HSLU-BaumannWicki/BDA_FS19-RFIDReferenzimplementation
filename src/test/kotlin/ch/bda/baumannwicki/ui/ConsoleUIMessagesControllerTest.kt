@@ -1,7 +1,7 @@
 package ch.bda.baumannwicki.ui
 
+import ch.bda.baumannwicki.ui.interaction.ConsoleInteraction
 import ch.bda.baumannwicki.ui.view.MessageViewImpl
-import ch.bda.baumannwicki.util.ConsoleInteraction
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.io.ByteArrayInputStream
@@ -14,7 +14,8 @@ internal class ConsoleUIMessagesControllerTest {
     @Test
     fun givenReaderContainingQ_whenCallingRunView_thenQueueShouldContainStopApplication() {
         // arrange
-        val consoleInteraction = ConsoleInteraction(ByteArrayInputStream("q\n".toByteArray()))
+        val consoleInteraction =
+            ConsoleInteraction(ByteArrayInputStream("q\n".toByteArray()))
         val queue = AtomicBoolean(true)
         val testee = ConsoleUIMessagesController(ConcurrentLinkedQueue(), queue, MessageViewImpl(), consoleInteraction)
         // act
@@ -26,7 +27,8 @@ internal class ConsoleUIMessagesControllerTest {
     @Test
     fun givenMessageQueueContainingTest_whenCallingRunView_thenMessageViewShouldDisplayTest() {
         // arrange
-        val consoleInteraction = ConsoleInteraction(ByteArrayInputStream("q\n".toByteArray()))
+        val consoleInteraction =
+            ConsoleInteraction(ByteArrayInputStream("q\n".toByteArray()))
         val queue = ConcurrentLinkedQueue<String>(listOf("Test"))
         val messageVieStub = MessageViewStub()
         val testee = ConsoleUIMessagesController(queue, AtomicBoolean(true), messageVieStub, consoleInteraction)
