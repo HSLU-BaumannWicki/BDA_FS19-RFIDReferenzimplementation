@@ -1,3 +1,5 @@
+package ch.bda.baumannwicki
+
 import ch.bda.baumannwicki.data.parser.CsvLibraryCopyParser
 import ch.bda.baumannwicki.data.supplier.LibraryCopyCSVSupplier
 import ch.bda.baumannwicki.log.LogPersistorImpl
@@ -35,8 +37,8 @@ fun main() {
     val tagInformationIncommintQueue = ConcurrentLinkedQueue<List<TagInformation>>()
     val misplacedRecognizer = MisplacedRecognizerImpl()
     val libraryCopySupplier =
-        LibraryCopyCSVSupplier(ReadableResourceFile("Artikel_Behaelter.csv"), CsvLibraryCopyParser())
-    val communicationDriver = HyientechDeviceCommunicationDriver("Basic")
+        LibraryCopyCSVSupplier(ReadableResourceFile("/artikelBehaelter.csv"), CsvLibraryCopyParser())
+    val communicationDriver = HyientechDeviceCommunicationDriver("/Basic.dll")
     communicationDriver.initialize()
 
     val continuousReader = ContinuousReader(run, tagInformationIncommintQueue, 200, communicationDriver)
@@ -63,4 +65,5 @@ fun main() {
 
     thread.join(10000)
     thread2.join(10000)
+
 }
