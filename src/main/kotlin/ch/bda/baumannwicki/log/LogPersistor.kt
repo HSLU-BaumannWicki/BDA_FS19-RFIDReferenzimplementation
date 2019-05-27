@@ -1,6 +1,7 @@
 package ch.bda.baumannwicki.log
 
 import ch.bda.baumannwicki.data.LibraryCopy
+import ch.bda.baumannwicki.misplacedrecognizer.BoxIdentificationNotPossibleException
 
 interface LogPersistor {
     fun misplacedTagFound(
@@ -9,4 +10,5 @@ interface LogPersistor {
         box: String
     )
     fun noMisplacedTagFound(correctPlacedTags: List<LibraryCopy>)
+    fun error(error: Throwable)
 }

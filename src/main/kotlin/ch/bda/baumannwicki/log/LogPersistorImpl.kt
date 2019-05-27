@@ -1,6 +1,7 @@
 package ch.bda.baumannwicki.log
 
 import ch.bda.baumannwicki.data.LibraryCopy
+import ch.bda.baumannwicki.misplacedrecognizer.BoxIdentificationNotPossibleException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.logging.Logger
@@ -10,6 +11,9 @@ class LogPersistorImpl(private val logger: Logger) : LogPersistor {
     init {
         val dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) ?: ""
         logger.info("Logger startet at $dateTime")
+    }
+    override fun error(error: Throwable) {
+        logger.warning(error.toString())
     }
 
     override fun noMisplacedTagFound(correctPlacedTags: List<LibraryCopy>) = printTagsFound(correctPlacedTags)
