@@ -22,6 +22,10 @@ fun main() {
     val dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH.mm.ss")) ?: "UnknownTime"
     val fileHandler = FileHandler("./RFIDRefImplIntegrationTestLog-$dateTime.log")
     val logger = Logger.getLogger("RFIDReferenzimplementation")
+    logger.useParentHandlers = false
+    for (handler in logger.handlers) {
+        logger.removeHandler(handler)
+    }
     logger.addHandler(fileHandler)
     val logPersistor = LogPersistorImpl(logger)
 
