@@ -15,8 +15,12 @@ class LogPersistorImpl(private val logger: Logger) : LogPersistor {
     override fun noMisplacedTagFound(correctPlacedTags: List<LibraryCopy>) = printTagsFound(correctPlacedTags)
 
 
-    override fun misplacedTagFound(misplacedTag: List<LibraryCopy>, correctPlacedTags: List<LibraryCopy>) {
-        misplacedTagFound(misplacedTag)
+    override fun misplacedTagFound(
+        misplacedTag: List<LibraryCopy>,
+        correctPlacedTags: List<LibraryCopy>,
+        box: String
+    ) {
+        misplacedTagFound(misplacedTag, box)
         noMisplacedTagFound(correctPlacedTags)
     }
 
@@ -24,8 +28,8 @@ class LogPersistorImpl(private val logger: Logger) : LogPersistor {
         if (!tags.isEmpty()) logger.info(LIBRARY_TAGS_FOUND + tags.map(this::mapLibraryCopyToString))
     }
 
-    private fun misplacedTagFound(tags: List<LibraryCopy>) {
-        if (!tags.isEmpty()) logger.warning(MISPLACED_TAGS_FOUND + tags.map(this::mapLibraryCopyToString))
+    private fun misplacedTagFound(tags: List<LibraryCopy>, box: String) {
+        if (!tags.isEmpty()) logger.warning("$MISPLACED_TAGS_FOUND $box  -> "+tags.map(this::mapLibraryCopyToString))
     }
 
     private fun mapLibraryCopyToString(libraryCopy: LibraryCopy): String {
@@ -34,6 +38,6 @@ class LogPersistorImpl(private val logger: Logger) : LogPersistor {
 
     companion object {
         val LIBRARY_TAGS_FOUND = "LibraryCopies found: "
-        val MISPLACED_TAGS_FOUND = "MisplacedTag found"
+        val MISPLACED_TAGS_FOUND = "MisplacedTag found, CorrectBox is:"
     }
 }

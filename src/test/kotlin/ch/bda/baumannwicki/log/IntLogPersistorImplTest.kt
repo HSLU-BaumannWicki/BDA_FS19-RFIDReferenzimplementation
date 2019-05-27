@@ -26,6 +26,9 @@ internal class IntLogPersistorImplTest {
 
     @Test
     fun misplacedTagFound() {
-        logPersistor.misplacedTagFound(listOf(LibraryCopy("ZYXW1","1337","Book","Vertical")),listOf(LibraryCopy("ABCD1","1","Book","Horizontal"),LibraryCopy("ABCD2","1","Book","Horizontal"),LibraryCopy("ABCD3","1","Book","Horizontal")))
+        logPersistor.misplacedTagFound(listOf(LibraryCopy("ZYXW1","1337","Book","Vertical")),
+            listOf(LibraryCopy("ABCD1","1","Book","Horizontal"),LibraryCopy("ABCD2","1","Book","Horizontal"),LibraryCopy("ABCD3","1","Book","Horizontal")),
+            ""
+        )
     }
 }

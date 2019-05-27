@@ -19,7 +19,7 @@ internal class LogPersistorImplTest {
             )
 
         val testee = LogPersistorImpl(logger)
-        testee.misplacedTagFound(testDatas, testDatas)
+        testee.misplacedTagFound(testDatas, testDatas, "")
         assertEquals(
             logger.warnings.size,
             logger.infos.size - 1,
@@ -38,7 +38,7 @@ internal class LogPersistorImplTest {
             )
 
         val testee = LogPersistorImpl(logger)
-        testee.misplacedTagFound(testDatas, testDatas)
+        testee.misplacedTagFound(testDatas, testDatas, "")
         assertTrue(
             logger.warnings.filter { it.contains("$") }.count() >= 1,
             "List should contain at least 1 Dollar sign"
