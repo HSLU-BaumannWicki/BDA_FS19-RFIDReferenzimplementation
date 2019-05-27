@@ -5,6 +5,7 @@ import ch.bda.baumannwicki.misplacedtagidentifier.data.parser.CsvLibraryCopyPars
 import ch.bda.baumannwicki.misplacedtagidentifier.data.supplier.LibraryCopyCSVSupplier
 import ch.bda.baumannwicki.misplacedtagidentifier.data.supplier.LibraryCopySupplier
 import ch.bda.baumannwicki.tagreader.ContinuousReader
+import ch.bda.baumannwicki.uimessage.Message
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import rfid.communication.HyientechDeviceCommunicationDriver
@@ -39,7 +40,7 @@ class IntMisplacedTagIdentifyControllerTest() {
             misplacedTagIdentifier,
             libraryCopySupplier,
             logPersistor,
-            ConcurrentLinkedQueue<String>()
+            ConcurrentLinkedQueue<Message>()
         )
 
         val thread = Thread { testee.runMisplacedTagRecognizerControllerTest() }
