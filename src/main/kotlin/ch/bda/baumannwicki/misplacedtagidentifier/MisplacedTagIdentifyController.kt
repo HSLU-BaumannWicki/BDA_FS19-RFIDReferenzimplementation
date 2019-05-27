@@ -4,6 +4,7 @@ import ch.bda.baumannwicki.bookinformation.LibraryCopyId
 import ch.bda.baumannwicki.misplacedtagidentifier.data.LibraryCopy
 import ch.bda.baumannwicki.misplacedtagidentifier.data.supplier.LibraryCopySupplier
 import ch.bda.baumannwicki.misplacedtagidentifier.log.LogPersistor
+import ch.bda.baumannwicki.uimessage.Message
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -13,7 +14,7 @@ class MisplacedTagIdentifyController(
     val misplacedTagIdentifier: MisplacedTagIdentifier,
     val libraryCopySupplier: LibraryCopySupplier,
     val logPersistor: LogPersistor,
-    val messegesToViewQueue: Queue<String>
+    val messegesToViewQueue: Queue<Message>
 ) {
 
     fun runMisplacedTagRecognizerControllerTest() {
@@ -35,7 +36,7 @@ class MisplacedTagIdentifyController(
                 }
                 if (misplacedTags.isNotEmpty()) {
                     logPersistor.misplacedTagFound(misplacedTags, libraryCopyList, box)
-                    messegesToViewQueue.offer("MisplacedTag Found (should be in Box $box): $misplacedTags")
+                    messegesToViewQueue.offer(Message("MisplacedTag Found (should be in Box $box): $misplacedTags"))
                 } else {
                     logPersistor.noMisplacedTagFound(libraryCopyList)
                 }

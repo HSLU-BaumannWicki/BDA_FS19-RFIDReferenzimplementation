@@ -10,6 +10,7 @@ import ch.bda.baumannwicki.tagreader.ContinuousReader
 import ch.bda.baumannwicki.ui.ConsoleUIMessagesController
 import ch.bda.baumannwicki.ui.interaction.ConsoleInteraction
 import ch.bda.baumannwicki.ui.view.MessageViewImpl
+import ch.bda.baumannwicki.uimessage.Message
 import rfid.communication.HyientechDeviceCommunicationDriver
 import util.ReadableResourceFile
 import java.time.LocalDateTime
@@ -32,7 +33,7 @@ fun main() {
     val logPersistor = LogPersistorImpl(logger)
 
     // Continuous Reader
-    val messegeQueueToView = ConcurrentLinkedQueue<String>()
+    val messegeQueueToView = ConcurrentLinkedQueue<Message>()
     val run = AtomicBoolean(true)
     val tagInformationIncommintQueue = ConcurrentLinkedQueue<List<LibraryCopyId>>()
     val misplacedRecognizer = MisplacedTagIdentifierImpl()
