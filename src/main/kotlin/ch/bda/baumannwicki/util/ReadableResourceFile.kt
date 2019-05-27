@@ -1,24 +1,21 @@
 package util
 
-import java.io.File
-import java.io.FileNotFoundException
-import java.io.Reader
+import java.io.*
+import java.net.URL
 
 class ReadableResourceFile(resourceName: String) : ReadableFile {
 
-    private var file: File
+    private val fileUrl: URL
 
     init {
-        val path: String = ReadableResourceFile::class.java.getResource("../$resourceName").path
-        file = File(path)
-        if (!file.exists() && !file.canRead()) throw FileNotFoundException()
+        fileUrl =  javaClass.getResource(resourceName)
     }
 
     override fun getReader(): Reader {
-        return file.reader()
+        return fileUrl.openStream().bufferedReader()
     }
 
     override fun getText(): String {
-        return file.inputStream().bufferedReader().readText()
+        return fileUrl.openStream().bufferedReader().readText()
     }
 }

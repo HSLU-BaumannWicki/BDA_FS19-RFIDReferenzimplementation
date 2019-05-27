@@ -12,7 +12,8 @@ class MisplacedTagRecognizerController(
     val incomingTagInformationQueue: Queue<List<TagInformation>>,
     val misplacedRecognizer: MisplacedRecognizer,
     val libraryCopySupplier: LibraryCopySupplier,
-    val logPersistor: LogPersistor
+    val logPersistor: LogPersistor,
+    val messegesToViewQueue: Queue<String>
 ) {
 
     fun runMisplacedTagRecognizerControllerTest() {
@@ -23,9 +24,18 @@ class MisplacedTagRecognizerController(
                 for (tag: TagInformation in tagList) {
                     libraryCopyList.add(libraryCopySupplier.getLibraryCopyByID(tag.toASCIIString()))
                 }
-                val misplacedTags: List<LibraryCopy> = misplacedRecognizer.getMisplacedTags(libraryCopyList)
-                if (!misplacedTags.isEmpty()) {
-                    logPersistor.misplacedTagFound(misplacedTags, libraryCopyList)
+                var misplacedTags: List<LibraryCopy> = emptyList()
+                var box = ""
+
+                try {
+                    misplacedTags = misplacedRecognizer.getMisplacedTags(libraryCopyList)
+                    box = misplacedRecognizer.getBackRelationBoxId(libraryCopyList)
+                } catch (error: BoxIdentificationNotPossibleException) {
+                    logPersistor.error(error)
+                }
+                if (misplacedTags.isNotEmpty()) {
+                    logPersistor.misplacedTagFound(misplacedTags, libraryCopyList, box)
+                    messegesToViewQueue.offer("MisplacedTag Found (should be in Box $box): $misplacedTags")
                 } else {
                     logPersistor.noMisplacedTagFound(libraryCopyList)
                 }

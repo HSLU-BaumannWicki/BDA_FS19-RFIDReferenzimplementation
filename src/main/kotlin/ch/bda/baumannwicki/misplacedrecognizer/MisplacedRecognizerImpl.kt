@@ -7,13 +7,16 @@ class MisplacedRecognizerImpl : MisplacedRecognizer {
         var map: MutableMap<String, Int> = getMapWithBoxAsKeyAndNumberOfCallsAsValue(allTags)
         val resultList: MutableList<Pair<String, Int>> = getListSortedByValueFromMap(map)
         throwErrorIfClearIdentificationNotPossible(resultList)
-        return resultList.removeAt(0).first
+        return if(resultList.isNotEmpty()) resultList.removeAt(0).first else ""
     }
 
     override fun getMisplacedTags(allTags: List<LibraryCopy>): List<LibraryCopy> {
         var map: MutableMap<String, Int> = getMapWithBoxAsKeyAndNumberOfCallsAsValue(allTags)
         val resultList: MutableList<Pair<String, Int>> = getListSortedByValueFromMap(map)
         throwErrorIfClearIdentificationNotPossible(resultList)
+        if (resultList.size <= 1){
+            return emptyList()
+        }
         resultList.removeAt(0)
         val resultMap: Map<String, Int> = resultList.toMap()
         return allTags.filter { resultMap.containsKey(it.box) }.toList()
