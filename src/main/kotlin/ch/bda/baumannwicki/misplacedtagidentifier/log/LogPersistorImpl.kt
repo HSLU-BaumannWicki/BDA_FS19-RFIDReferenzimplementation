@@ -41,6 +41,6 @@ class LogPersistorImpl(private val logger: Logger) : LogPersistor {
 
     companion object {
         val LIBRARY_TAGS_FOUND = "LibraryCopies found: "
-        val MISPLACED_TAGS_FOUND = "MisplacedTag found, CorrectBox is:"
+        val MISPLACED_TAGS_FOUND = "MisplacedTag found, Tags are wrongfully placed in Box"
     }
 }

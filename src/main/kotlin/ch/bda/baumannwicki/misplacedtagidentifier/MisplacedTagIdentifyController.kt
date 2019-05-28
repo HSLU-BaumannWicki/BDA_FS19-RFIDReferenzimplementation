@@ -36,7 +36,7 @@ class MisplacedTagIdentifyController(
                 }
                 if (misplacedTags.isNotEmpty()) {
                     logPersistor.misplacedTagFound(misplacedTags, libraryCopyList, box)
-                    messegesToViewQueue.offer(Message("MisplacedTag Found (should be in Box $box): $misplacedTags"))
+                    messegesToViewQueue.offer(Message("MisplacedTag Found (found in Box: \"$box\"): $misplacedTags"))
                 } else {
                     logPersistor.noMisplacedTagFound(libraryCopyList)
                 }
