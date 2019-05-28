@@ -1,7 +1,8 @@
 package ch.bda.baumannwicki.ui
 
+import ch.bda.baumannwicki.ui.interaction.ConsoleInteraction
 import ch.bda.baumannwicki.ui.view.MessageViewImpl
-import ch.bda.baumannwicki.util.ConsoleInteraction
+import ch.bda.baumannwicki.uimessage.Message
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.io.ByteArrayInputStream
@@ -14,7 +15,8 @@ internal class ConsoleUIMessagesControllerTest {
     @Test
     fun givenReaderContainingQ_whenCallingRunView_thenQueueShouldContainStopApplication() {
         // arrange
-        val consoleInteraction = ConsoleInteraction(ByteArrayInputStream("q\n".toByteArray()))
+        val consoleInteraction =
+            ConsoleInteraction(ByteArrayInputStream("q\n".toByteArray()))
         val queue = AtomicBoolean(true)
         val testee = ConsoleUIMessagesController(ConcurrentLinkedQueue(), queue, MessageViewImpl(), consoleInteraction)
         // act
@@ -26,14 +28,15 @@ internal class ConsoleUIMessagesControllerTest {
     @Test
     fun givenMessageQueueContainingTest_whenCallingRunView_thenMessageViewShouldDisplayTest() {
         // arrange
-        val consoleInteraction = ConsoleInteraction(ByteArrayInputStream("q\n".toByteArray()))
-        val queue = ConcurrentLinkedQueue<String>(listOf("Test"))
+        val consoleInteraction =
+            ConsoleInteraction(ByteArrayInputStream("q\n".toByteArray()))
+        val queue = ConcurrentLinkedQueue<Message>(listOf(Message("Test")))
         val messageVieStub = MessageViewStub()
         val testee = ConsoleUIMessagesController(queue, AtomicBoolean(true), messageVieStub, consoleInteraction)
         // act
         testee.runView()
         // assert
-        assertEquals(listOf("Test"), messageVieStub.displayedMessages)
+        assertEquals(listOf(Message("Test")), messageVieStub.displayedMessages)
     }
 
     @Test
@@ -45,20 +48,22 @@ internal class ConsoleUIMessagesControllerTest {
                 return if (calls-- > 0) "wayne" else "q"
             }
         }
-        val queue = ConcurrentLinkedQueue<String>(listOf("Test", "test"))
+        val messageList = listOf(
+            Message("Test"), Message("test")
+        )
+        val queue = ConcurrentLinkedQueue<Message>(messageList)
         val messageVieStub = MessageViewStub()
         val testee = ConsoleUIMessagesController(queue, AtomicBoolean(true), messageVieStub, consoleInteraction)
         // act
         testee.runView()
         // assert
-        assertEquals(listOf("Test", "test"), messageVieStub.displayedMessages)
+        assertEquals(messageList, messageVieStub.displayedMessages)
     }
 
     @Disabled
     @Test
     fun int_givenMessageQueueContainingTestandtest_whenCallingRunView_thenMessageShouldGetDisplayedOnConsole() {
-        println("Hello, World!")
-        val queue = ConcurrentLinkedQueue<String>(listOf("Test", "test", "Test"))
+        val queue = ConcurrentLinkedQueue<Message>(listOf(Message("Test"), Message("test"), Message("Test")))
         val testee =
             ConsoleUIMessagesController(
                 queue,

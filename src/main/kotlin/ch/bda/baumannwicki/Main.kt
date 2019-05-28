@@ -1,16 +1,17 @@
 package ch.bda.baumannwicki
 
-import ch.bda.baumannwicki.data.parser.CsvLibraryCopyParser
-import ch.bda.baumannwicki.data.supplier.LibraryCopyCSVSupplier
-import ch.bda.baumannwicki.log.LogPersistorImpl
-import ch.bda.baumannwicki.misplacedrecognizer.MisplacedRecognizerImpl
-import ch.bda.baumannwicki.misplacedrecognizer.MisplacedTagRecognizerController
-import ch.bda.baumannwicki.rfidcommunication.ContinuousReader
+import ch.bda.baumannwicki.bookinformation.LibraryCopyId
+import ch.bda.baumannwicki.misplacedtagidentifier.MisplacedTagIdentifierImpl
+import ch.bda.baumannwicki.misplacedtagidentifier.MisplacedTagIdentifyController
+import ch.bda.baumannwicki.misplacedtagidentifier.data.parser.CsvLibraryCopyParser
+import ch.bda.baumannwicki.misplacedtagidentifier.data.supplier.LibraryCopyCSVSupplier
+import ch.bda.baumannwicki.misplacedtagidentifier.log.LogPersistorImpl
+import ch.bda.baumannwicki.tagreader.ContinuousReader
 import ch.bda.baumannwicki.ui.ConsoleUIMessagesController
+import ch.bda.baumannwicki.ui.interaction.ConsoleInteraction
 import ch.bda.baumannwicki.ui.view.MessageViewImpl
-import ch.bda.baumannwicki.util.ConsoleInteraction
+import ch.bda.baumannwicki.uimessage.Message
 import rfid.communication.HyientechDeviceCommunicationDriver
-import rfid.communicationid.TagInformation
 import util.ReadableResourceFile
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -32,10 +33,10 @@ fun main() {
     val logPersistor = LogPersistorImpl(logger)
 
     // Continuous Reader
-    val messegeQueueToView = ConcurrentLinkedQueue<String>()
+    val messegeQueueToView = ConcurrentLinkedQueue<Message>()
     val run = AtomicBoolean(true)
-    val tagInformationIncommintQueue = ConcurrentLinkedQueue<List<TagInformation>>()
-    val misplacedRecognizer = MisplacedRecognizerImpl()
+    val tagInformationIncommintQueue = ConcurrentLinkedQueue<List<LibraryCopyId>>()
+    val misplacedRecognizer = MisplacedTagIdentifierImpl()
     val libraryCopySupplier =
         LibraryCopyCSVSupplier(ReadableResourceFile("/artikelBehaelter.csv"), CsvLibraryCopyParser())
     val communicationDriver = HyientechDeviceCommunicationDriver("/Basic.dll")
@@ -43,7 +44,7 @@ fun main() {
 
     val continuousReader = ContinuousReader(run, tagInformationIncommintQueue, 200, communicationDriver)
 
-    val misplacedRecognizeController = MisplacedTagRecognizerController(
+    val misplacedRecognizeController = MisplacedTagIdentifyController(
         run,
         tagInformationIncommintQueue,
         misplacedRecognizer,
