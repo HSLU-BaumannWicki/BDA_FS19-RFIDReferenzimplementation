@@ -8,14 +8,14 @@ import com.sun.jna.ptr.ByteByReference
 import com.sun.jna.ptr.IntByReference
 import rfid.communicationid.TagInformation
 
-class HyientechDeviceCommunicationDriver(dllFile: String) :
-    CommunicationDriver {
-    private val hyientechDriver: HyientechDriver
+class HyientechDeviceCommunicationDriver(dllFile: String) : CommunicationDriver {
 
+    private val hyientechDriver: HyientechDriver
     private val baudRatePointer = 0.toByte()
     private val frmHandlePointer = IntByReference(0)
     private val deviceAddressPointer = ByteByReference(Byte.MIN_VALUE)
     private val devicePortPointer = IntByReference()
+    private var lastInventoryScanTime = 0.toByte()
 
     init {
         if (Platform.isWindows()) {
@@ -75,9 +75,35 @@ class HyientechDeviceCommunicationDriver(dllFile: String) :
     }
 
     override fun findAllRfids(timeout: Int): List<TagInformation> {
-        var inventoryScanTime = ByteByReference(timeout.toByte())
-        hyientechDriver.WriteInventoryScanTime(this.deviceAddressPointer, inventoryScanTime, frmHandlePointer.value)
+        val timeoutByte = timeout.toByte()
+        var inventoryScanTime = ByteByReference(timeoutByte)
+        if(lastInventoryScanTime!=timeoutByte){
+            hyientechDriver.WriteInventoryScanTime(this.deviceAddressPointer, inventoryScanTime, frmHandlePointer.value)
+            lastInventoryScanTime = timeoutByte
+        }
         return findAllRfids()
+    }
+
+    private fun createInventory(tags: ByteByReference, deleteInventory: Boolean = true): List<TagInformation> {
+        var tagsInformation = ArrayList<TagInformation>()
+        var nmrTags = ByteByReference()
+        var tagsPointer: Pointer = Memory(255 * 9)
+        tags.pointer = tagsPointer
+        var value = hyientechDriver.Inventory(
+            deviceAddressPointer,
+            if (deleteInventory) CINTINUOS_WITHOUT_AFI else WITHOUT_AFI,
+            GARBAGE_BYTE_REFERENCE,
+            tags,
+            nmrTags,
+            frmHandlePointer.value
+        )
+        if (value == 0 || value == 14 || value == 11) {
+            for (i in 1..nmrTags.value) {
+                tagsInformation.add(TagInformation(tagsPointer.getByteArray(((i - 1) * 9 + 1).toLong(), 8).toList()))
+            }
+        }
+        return tagsInformation
+
     }
 
     override fun isSingleTagReachable(tagInformation: TagInformation): Boolean {
@@ -96,30 +122,9 @@ class HyientechDeviceCommunicationDriver(dllFile: String) :
         ) == 0
     }
 
-    override fun switchToAntenna(hyientechAntennaPosition: HyientechAntennaPositions) {
-        val antennaStatus = ByteByReference((hyientechAntennaPosition.antennaPosition).toByte())
+    override fun switchToAntenna(antennaPosition: AntennaPosition) {
+        val antennaStatus = ByteByReference((antennaPosition.getPositionAsInt()).toByte())
         hyientechDriver.SetActiveANT(deviceAddressPointer, antennaStatus, frmHandlePointer.value)
-    }
-
-    private fun createInventory(tags: ByteByReference): List<TagInformation> {
-        var tagsInformation = ArrayList<TagInformation>()
-        var nmrTags = ByteByReference()
-        var tagsPointer: Pointer = Memory(255 * 9)
-        tags.pointer = tagsPointer
-        var value = hyientechDriver.Inventory(
-            deviceAddressPointer,
-            CINTINUOS_WITHOUT_AFI,
-            GARBAGE_BYTE_REFERENCE,
-            tags,
-            nmrTags,
-            frmHandlePointer.value
-        )
-        if (value == 0 || value == 14 || value == 11) {
-            for (i in 1..nmrTags.value) {
-                tagsInformation.add(TagInformation(tagsPointer.getByteArray(((i - 1) * 9 + 1).toLong(), 8).toList()))
-            }
-        }
-        return tagsInformation
     }
 
     private interface HyientechDriver : Library {

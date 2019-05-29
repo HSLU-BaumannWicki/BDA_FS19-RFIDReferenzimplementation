@@ -11,6 +11,7 @@ class LogPersistorImpl(private val logger: Logger) : LogPersistor {
         val dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) ?: ""
         logger.info("Logger startet at $dateTime")
     }
+
     override fun error(error: Throwable) {
         logger.warning(error.toString())
     }
@@ -32,7 +33,7 @@ class LogPersistorImpl(private val logger: Logger) : LogPersistor {
     }
 
     private fun misplacedTagFound(tags: List<LibraryCopy>, box: String) {
-        if (!tags.isEmpty()) logger.warning("$MISPLACED_TAGS_FOUND $box  -> "+tags.map(this::mapLibraryCopyToString))
+        if (!tags.isEmpty()) logger.warning("$MISPLACED_TAGS_FOUND $box  -> " + tags.map(this::mapLibraryCopyToString))
     }
 
     private fun mapLibraryCopyToString(libraryCopy: LibraryCopy): String {
