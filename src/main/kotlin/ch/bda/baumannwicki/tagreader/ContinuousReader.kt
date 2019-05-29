@@ -3,6 +3,7 @@ package ch.bda.baumannwicki.tagreader
 import ch.bda.baumannwicki.bookinformation.LibraryCopyId
 import ch.bda.baumannwicki.tagreader.devicecommunication.CommunicationDriver
 import ch.bda.baumannwicki.tagreader.devicecommunication.DeviceCommunicationException
+import ch.bda.baumannwicki.tagreader.devicecommunication.hyientech.HyientechAntennaPosition
 import rfid.communication.AntennaPosition
 import rfid.communicationid.TagInformation
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -16,8 +17,8 @@ class ContinuousReader(
 ) {
     fun readContinuouslyForNewRFIDTags() {
         while (continueRunning.get()) {
-            var libraryCopyIDList: MutableList<LibraryCopyId> = readReachableTagsFromAntenna(AntennaPosition.ONE)
-            libraryCopyIDList = readReachableTagsFromAntenna(AntennaPosition.TWO, libraryCopyIDList)
+            var libraryCopyIDList: MutableList<LibraryCopyId> = readReachableTagsFromAntenna(HyientechAntennaPosition.ONE)
+            libraryCopyIDList = readReachableTagsFromAntenna(HyientechAntennaPosition.TWO, libraryCopyIDList)
             communicationQueue.offer(libraryCopyIDList)
         }
     }
