@@ -6,7 +6,7 @@ import rfid.communicationid.TagInformation
 interface CommunicationDriver {
     fun findAllRfids(): List<TagInformation>
     fun findAllRfids(timeout: Int): List<TagInformation>
-    fun isSingleTagReachable(uid: TagInformation): Boolean
+    fun isSingleTagReachable(tagInformation: TagInformation): Boolean
     fun switchToAntenna(antennaPosition: AntennaPosition)
     fun readBlocks(from: Byte, numberOfBlocksToRead: Byte, tagInformation: TagInformation): List<Byte>
 }
