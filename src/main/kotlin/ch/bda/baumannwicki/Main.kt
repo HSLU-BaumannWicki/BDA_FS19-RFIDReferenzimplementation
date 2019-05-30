@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.logging.FileHandler
 import java.util.logging.Logger
+import kotlin.reflect.KFunction0
 
 fun main() {
     // Log Persistor
@@ -42,10 +43,9 @@ fun main() {
     val communicationDriver = HyientechDeviceCommunicationDriver("/Basic.dll")
     communicationDriver.initialize()
 
-    val continuousReader = ContinuousReader(run, tagInformationIncommintQueue, 200, communicationDriver)
+    val continuousReader = ContinuousReader(tagInformationIncommintQueue, 200, communicationDriver)
 
     val misplacedRecognizeController = MisplacedTagIdentifyController(
-        run,
         tagInformationIncommintQueue,
         misplacedRecognizer,
         libraryCopySupplier,
@@ -57,8 +57,8 @@ fun main() {
     val messageView = MessageViewImpl()
     val ui = ConsoleUIMessagesController(messegeQueueToView, run, messageView, consoleInteraction)
 
-    val thread = Thread { misplacedRecognizeController.runMisplacedTagRecognizerControllerTest() }
-    val thread2 = Thread { continuousReader.readContinuouslyForNewRFIDTags() }
+    val thread = Thread { executeWhileTrue(run, misplacedRecognizeController::runMisplacedTagRecognizerControllerTest) }
+    val thread2 = Thread { executeWhileTrue(run, continuousReader::readNewRFIDTags) }
     thread2.start()
     thread.start()
 
@@ -67,4 +67,10 @@ fun main() {
     thread.join(10000)
     thread2.join(10000)
 
+}
+
+fun executeWhileTrue(boolean: AtomicBoolean, function: KFunction0<Unit>) {
+    while (boolean.get()) {
+        function.call()
+    }
 }

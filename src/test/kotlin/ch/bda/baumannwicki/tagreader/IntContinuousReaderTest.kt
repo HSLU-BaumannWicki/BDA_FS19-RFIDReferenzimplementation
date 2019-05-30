@@ -19,7 +19,7 @@ internal class IntContinuousReaderTest {
         val reader =
             ContinuousReader(keepRunning, communicationQueue, 100, communicationDriver)
         Thread {
-            reader.readContinuouslyForNewRFIDTags()
+            reader.readNewRFIDTags()
         }.start()
         Thread.sleep(10000)
         keepRunning.set(false)

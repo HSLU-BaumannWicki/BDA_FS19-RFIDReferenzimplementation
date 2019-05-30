@@ -5,19 +5,15 @@ import ch.bda.baumannwicki.tagreader.devicecommunication.CommunicationDriver
 import ch.bda.baumannwicki.tagreader.devicecommunication.DeviceCommunicationException
 import rfid.communicationid.TagInformation
 import java.util.concurrent.ConcurrentLinkedQueue
-import java.util.concurrent.atomic.AtomicBoolean
 
 class ContinuousReader(
-    val continueRunning: AtomicBoolean,
     val communicationQueue: ConcurrentLinkedQueue<List<LibraryCopyId>>,
     val readingTimeForInventory: Int,
     val communicationDriver: CommunicationDriver
 ) {
-    fun readContinuouslyForNewRFIDTags() {
-        while (continueRunning.get()) {
-            var tagInformations: List<TagInformation> = findAllRFIDs()
-            sendBlocksFromTagsToQueue(tagInformations)
-        }
+    fun readNewRFIDTags() {
+        var tagInformations: List<TagInformation> = findAllRFIDs()
+        sendBlocksFromTagsToQueue(tagInformations)
     }
 
     private fun sendBlocksFromTagsToQueue(tagInformations: List<TagInformation>) {

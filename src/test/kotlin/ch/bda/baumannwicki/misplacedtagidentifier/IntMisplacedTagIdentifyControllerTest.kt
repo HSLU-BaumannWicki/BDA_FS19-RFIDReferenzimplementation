@@ -44,7 +44,7 @@ class IntMisplacedTagIdentifyControllerTest() {
         )
 
         val thread = Thread { testee.runMisplacedTagRecognizerControllerTest() }
-        val thread2 = Thread { reader.readContinuouslyForNewRFIDTags() }
+        val thread2 = Thread { reader.readNewRFIDTags() }
         thread2.start()
         thread.start()
         Thread.sleep(10000)
