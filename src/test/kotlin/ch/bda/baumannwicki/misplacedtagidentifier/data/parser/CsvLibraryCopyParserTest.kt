@@ -2,7 +2,6 @@ package ch.bda.baumannwicki.misplacedtagidentifier.data.parser
 
 import ch.bda.baumannwicki.misplacedtagidentifier.data.LibraryCopy
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 
 internal class CsvLibraryCopyParserTest {
