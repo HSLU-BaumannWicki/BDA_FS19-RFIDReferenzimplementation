@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.logging.FileHandler
 import java.util.logging.Logger
 
-fun main() {
+fun main(args: Array<String>) {
     // Log Persistor
     val dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH.mm.ss")) ?: "UnknownTime"
     val fileHandler = FileHandler("./RFIDRefImplIntegrationTestLog-$dateTime.log")
@@ -42,7 +42,7 @@ fun main() {
     val communicationDriver = HyientechDeviceCommunicationDriver("/Basic.dll")
     communicationDriver.initialize()
 
-    val continuousReader = ContinuousReader(run, tagInformationIncommintQueue, 200, communicationDriver)
+    val continuousReader = ContinuousReader(run, tagInformationIncommintQueue, 500, communicationDriver)
 
     val misplacedRecognizeController = MisplacedTagIdentifyController(
         run,
