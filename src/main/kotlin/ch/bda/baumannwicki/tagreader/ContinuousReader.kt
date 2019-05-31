@@ -7,20 +7,17 @@ import ch.bda.baumannwicki.tagreader.devicecommunication.hyientech.HyientechAnte
 import rfid.communication.AntennaPosition
 import rfid.communicationid.TagInformation
 import java.util.concurrent.ConcurrentLinkedQueue
-import java.util.concurrent.atomic.AtomicBoolean
 
 class ContinuousReader(
-    val continueRunning: AtomicBoolean,
     val communicationQueue: ConcurrentLinkedQueue<List<LibraryCopyId>>,
     val readingTimeForInventory: Int,
     val communicationDriver: CommunicationDriver
 ) {
-    fun readContinuouslyForNewRFIDTags() {
-        while (continueRunning.get()) {
-            var libraryCopyIDList: MutableList<LibraryCopyId> = readReachableTagsFromAntenna(HyientechAntennaPosition.ONE)
-            libraryCopyIDList = readReachableTagsFromAntenna(HyientechAntennaPosition.TWO, libraryCopyIDList)
-            communicationQueue.offer(libraryCopyIDList)
-        }
+
+    fun readNewRFIDTags() {
+        var libraryCopyIDList: MutableList<LibraryCopyId> = readReachableTagsFromAntenna(HyientechAntennaPosition.ONE)
+        libraryCopyIDList = readReachableTagsFromAntenna(HyientechAntennaPosition.TWO, libraryCopyIDList)
+        communicationQueue.offer(libraryCopyIDList)
     }
 
     private fun readReachableTagsFromAntenna(

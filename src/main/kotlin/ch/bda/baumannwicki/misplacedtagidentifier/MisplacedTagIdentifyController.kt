@@ -7,11 +7,9 @@ import ch.bda.baumannwicki.misplacedtagidentifier.data.supplier.NoLibraryCopyFou
 import ch.bda.baumannwicki.misplacedtagidentifier.log.LogPersistor
 import ch.bda.baumannwicki.uimessage.Message
 import java.util.*
-import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.collections.HashSet
 
 class MisplacedTagIdentifyController(
-    val run: AtomicBoolean,
     val incomingTagInformationQueue: Queue<List<LibraryCopyId>>,
     val misplacedTagIdentifier: MisplacedTagIdentifier,
     val libraryCopySupplier: LibraryCopySupplier,
@@ -20,29 +18,27 @@ class MisplacedTagIdentifyController(
 ) {
 
     fun runMisplacedTagRecognizerControllerTest() {
-        while (run.get()) {
-            if (!incomingTagInformationQueue.isEmpty()) {
-                val libraryCopyList: MutableSet<LibraryCopy> = HashSet()
-                val tagList: List<LibraryCopyId> = incomingTagInformationQueue.poll()
-                for (tag: LibraryCopyId in tagList) {
-                    addExistingLibraryCopyIdToSet(tag, libraryCopyList)
-                }
-                var misplacedTags: List<LibraryCopy> = emptyList()
-                var box = ""
+        if (!incomingTagInformationQueue.isEmpty()) {
+            val libraryCopyList: MutableSet<LibraryCopy> = HashSet()
+            val tagList: List<LibraryCopyId> = incomingTagInformationQueue.poll()
+            for (tag: LibraryCopyId in tagList) {
+                addExistingLibraryCopyIdToSet(tag, libraryCopyList)
+            }
+            var misplacedTags: List<LibraryCopy> = emptyList()
+            var box = ""
 
-                try {
-                    misplacedTags = misplacedTagIdentifier.getMisplacedTags(libraryCopyList.toList())
-                    box = misplacedTagIdentifier.getBackRelationBoxId(libraryCopyList.toList())
-                } catch (error: BoxIdentificationNotPossibleException) {
-                    logPersistor.error(error)
-                }
-                if (misplacedTags.isNotEmpty()) {
-                    logPersistor.misplacedTagFound(misplacedTags, libraryCopyList.toList(), box)
-                    messegesToViewQueue.offer(Message("MisplacedTag Found (found in Box: \"$box\"): $misplacedTags"))
-                } else {
-                    logPersistor.noMisplacedTagFound(libraryCopyList.toList())
-                    sendMessageToView(libraryCopyList, box)
-                }
+            try {
+                misplacedTags = misplacedTagIdentifier.getMisplacedTags(libraryCopyList.toList())
+                box = misplacedTagIdentifier.getBackRelationBoxId(libraryCopyList.toList())
+            } catch (error: BoxIdentificationNotPossibleException) {
+                logPersistor.error(error)
+            }
+            if (misplacedTags.isNotEmpty()) {
+                logPersistor.misplacedTagFound(misplacedTags, libraryCopyList.toList(), box)
+                messegesToViewQueue.offer(Message("MisplacedTag Found (found in Box: \"$box\"): $misplacedTags"))
+            } else {
+                logPersistor.noMisplacedTagFound(libraryCopyList.toList())
+                sendMessageToView(libraryCopyList, box)
             }
         }
     }

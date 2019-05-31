@@ -32,10 +32,9 @@ class IntMisplacedTagIdentifyControllerTest() {
         val communicationDriver = HyientechDeviceCommunicationDriver("Basic")
         communicationDriver.initialize()
 
-        val reader = ContinuousReader(run, tagInformationIncommintQueue, 200, communicationDriver)
+        val reader = ContinuousReader(tagInformationIncommintQueue, 200, communicationDriver)
 
         val testee = MisplacedTagIdentifyController(
-            run,
             tagInformationIncommintQueue,
             misplacedTagIdentifier,
             libraryCopySupplier,
@@ -43,8 +42,16 @@ class IntMisplacedTagIdentifyControllerTest() {
             ConcurrentLinkedQueue<Message>()
         )
 
-        val thread = Thread { testee.runMisplacedTagRecognizerControllerTest() }
-        val thread2 = Thread { reader.readContinuouslyForNewRFIDTags() }
+        val thread = Thread {
+            while (run.get()) {
+                testee.runMisplacedTagRecognizerControllerTest()
+            }
+        }
+        val thread2 = Thread {
+            while (run.get()) {
+                reader.readNewRFIDTags()
+            }
+        }
         thread2.start()
         thread.start()
         Thread.sleep(10000)

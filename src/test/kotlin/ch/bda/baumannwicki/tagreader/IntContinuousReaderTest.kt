@@ -17,9 +17,11 @@ internal class IntContinuousReaderTest {
         val communicationQueue = ConcurrentLinkedQueue<List<LibraryCopyId>>()
         val keepRunning = AtomicBoolean(true)
         val reader =
-            ContinuousReader(keepRunning, communicationQueue, 100, communicationDriver)
+            ContinuousReader(communicationQueue, 100, communicationDriver)
         Thread {
-            reader.readContinuouslyForNewRFIDTags()
+            while (keepRunning.get()) {
+                reader.readNewRFIDTags()
+            }
         }.start()
         Thread.sleep(10000)
         keepRunning.set(false)
