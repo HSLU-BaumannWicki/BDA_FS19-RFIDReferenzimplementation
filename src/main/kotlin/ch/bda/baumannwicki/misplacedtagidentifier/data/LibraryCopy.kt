@@ -17,4 +17,8 @@ class LibraryCopy(
     override fun toString(): String {
         return "$article, $box, $type, $layout, $subBox"
     }
+
+    override fun hashCode(): Int {
+        return article.hashCode()
+    }
 }

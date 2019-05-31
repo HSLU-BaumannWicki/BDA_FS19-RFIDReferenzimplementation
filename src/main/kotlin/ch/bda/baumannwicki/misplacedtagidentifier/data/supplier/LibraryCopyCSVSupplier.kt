@@ -5,6 +5,11 @@ import ch.bda.baumannwicki.misplacedtagidentifier.data.parser.CsvParser
 import util.ReadableFile
 
 class LibraryCopyCSVSupplier(val file: ReadableFile, val csvParser: CsvParser<LibraryCopy>) : LibraryCopySupplier {
+    val fileList: List<String>
+    init {
+        fileList = file.getReader().readLines()
+    }
+
     override fun getLibraryCopyByID(identifier: String): LibraryCopy {
         file.getReader().useLines { lines ->
             for (line in lines) {
@@ -16,6 +21,6 @@ class LibraryCopyCSVSupplier(val file: ReadableFile, val csvParser: CsvParser<Li
                 }
             }
         }
-        throw NoLibraryCopyFoundException()
+        throw NoLibraryCopyFoundException("Could not find LibraryCopy for Identifier: $identifier")
     }
 }

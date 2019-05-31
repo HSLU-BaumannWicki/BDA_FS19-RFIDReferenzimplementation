@@ -21,7 +21,7 @@ import java.util.logging.FileHandler
 import java.util.logging.Logger
 import kotlin.reflect.KFunction0
 
-fun main() {
+fun main(args: Array<String>) {
     // Log Persistor
     val dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH.mm.ss")) ?: "UnknownTime"
     val fileHandler = FileHandler("./RFIDRefImplIntegrationTestLog-$dateTime.log")
@@ -42,9 +42,9 @@ fun main() {
         LibraryCopyCSVSupplier(ReadableResourceFile("/artikelBehaelter.csv"), CsvLibraryCopyParser())
     val communicationDriver = HyientechDeviceCommunicationDriver("/Basic.dll")
     communicationDriver.initialize()
-
-    val continuousReader = ContinuousReader(tagInformationIncommintQueue, 200, communicationDriver)
-
+  
+    val continuousReader = ContinuousReader(tagInformationIncommintQueue, 500, communicationDriver)
+  
     val misplacedRecognizeController = MisplacedTagIdentifyController(
         tagInformationIncommintQueue,
         misplacedRecognizer,
